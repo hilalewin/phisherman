@@ -1,0 +1,34 @@
+{
+    "manifest_version": 2,
+    "name": "GDE Sample: Chrome extension Google APIs",
+    "version": "2",
+    "permissions": [
+        "activeTab",
+        "background",
+        "identity",
+        "https://mail.google.com/*",
+        "https://www.googleapis.com/*",
+        "https://*.googleusercontent.com/*"
+    ],
+    "icons":{
+    	"1": "icon2.png"
+    },
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": false
+    },
+    "browser_action": {
+        "default_title": "Click to Sign in with Google"
+    },
+    "oauth2": {
+        "client_id": "765430000956-j83fv4lh7fc18mb1cn283adrfkrlc3ga.apps.googleusercontent.com",
+        "scopes": [
+            "profile",
+            "https://www.googleapis.com/auth/gmail.readonly"
+        ]
+    }
+    ,
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgbDe4CqJu8KMnJZzpCzihsCUSnmEA6T3vvZC2hVPEorbCS4NmhupTI4rWHM8yv9A8fbSXBI0uyrIlCs9G8Rvi1tgbGjMtPeRpMYBY6m9gsGJAy8Sibu+mfgr0qaIV3c0XQwCbv7kaFe2R5J1nkY9g2M+PzBC3toZuoVN64aGFpOopuRaXGftcAfT5xOB2TH7BfRRF81tEDGzclxa7WrWWMeyq3HfHMxODfbBybn4EmcSbbv7SpNAirzZV6zZjyN8H8BYN1IASzXK2I2Phv1u7SsKUi2pSRIzy5NsF6ClM5jgWv3rjE4dfQtzpgzUV2UwzKk2KhSHQKLGjO6SoltKgwIDAQAB"
+}
