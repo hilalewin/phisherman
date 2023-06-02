@@ -1,6 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
+# ML
+from sklearn.naive_bayes import MultinomialNB
+
+
+
 app = Flask(__name__)
 cors = CORS(app)
 
