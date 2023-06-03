@@ -19,13 +19,28 @@ cors = CORS(app)
 @app.route('/analyze', methods=['POST'])
 def analyze():
 
-    emailObj = Email.from_json(request.get_json())
+    """    emailObj = from_json(Email,request.get_json())
     # Get the fields from the json
     print("Sender Email: " , emailObj.sender_email)
     print("Time: " , emailObj.time)
     print("Subject: " , emailObj.subject)
     print("Content: " , emailObj.content)
     print("Links: " , emailObj.links)
+    """
+
+     # Get the fields from the json
+    data = request.get_json()
+    
+    sender_email =  data['senderEmail']
+    time = data['time']
+    subject = data['subject']
+    content = data['content']
+    links = data['links']
+    print("\n\nSender Email: " , sender_email)
+    print("\nTime: " , time)
+    print("\nSubject: " , subject)
+    print("\nContent: " , content)
+    print("\nLinks: " , links)
 
     # Calculate the phishing prob based on the content
     analysis_result = {'content': content}
