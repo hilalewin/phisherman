@@ -20,10 +20,7 @@
         "storage",
         "activeTab",
         "scripting",
-        "background",
         "identity",
-        "tabs",
-        "contextMenus",
         "notifications"
     ],
     "host_permissions": [
