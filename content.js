@@ -7,6 +7,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (token && legacyThreadId){
         readMessageAndAnalyzeIfUnread(legacyThreadId,token);
       }
+      
     }
   });
   
