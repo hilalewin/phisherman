@@ -22,7 +22,9 @@
         "scripting",
         "identity",
         "notifications",
-        "tabs"
+        "tabs",
+        "contextMenus"
+
     ],
     "host_permissions": [
         "https://mail.google.com/*",

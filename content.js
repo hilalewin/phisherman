@@ -6,12 +6,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // Call your specific function with the token value
       if (token && legacyThreadId){
         readMessageAndAnalyzeIfUnread(legacyThreadId,token);
+        
       }
       
     }
   });
   
 function readMessageAndAnalyzeIfUnread(messageId, token) {
+  
   const url = `https://www.googleapis.com/gmail/v1/users/me/messages/${messageId}`;
   fetch(url, {
     headers: {
@@ -33,7 +35,6 @@ function readMessageAndAnalyzeIfUnread(messageId, token) {
         })
         .catch(error => {
               // Handle any errors
-              console.log(token)
               console.log(error)
         });
         

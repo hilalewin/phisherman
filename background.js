@@ -79,17 +79,37 @@ function setStoredAccessToken(token, callback) {
 function browserActionClicked(tab) {
   // Check if access token is stored
   getStoredAccessToken(function(storedToken) {
-    if (storedToken) {
-      // Use the stored token
-      create_alert("Hi, welcome back! Already logged in");
-      chrome.action.setIcon({ path: 'green_icon.png' });
-  
-    } else {
-      // Get a new access token
-      getAuthTokenInteractive();
+  if (checkAccessTokenValidity(storedToken)){
+    create_alert("Hi, welcome back! Already logged in");
+    chrome.action.setIcon({ path: 'green_icon.png' });
+  } 
+  else {
+    getAuthTokenInteractive();
+  }
+});
+}
+
+function checkAccessTokenValidity(accessToken) {
+  fetch('https://gmail.googleapis.com/gmail/v1/users/me/profile', {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
     }
+  })
+  .then(response => {
+    if (response.ok) {
+      return true; // or do something else
+    } else if (response.status === 401) {
+      return false; // or do something else
+    } else {
+      return false; // or do something else
+    }
+  })
+  .catch(error => {
+    console.error('Error checking access token validity:', error);
   });
 }
+
+
 
 chrome.action.onClicked.addListener(browserActionClicked);
 
