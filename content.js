@@ -4,7 +4,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const token = message.token;
       const legacyThreadId = document.querySelector('[role="main"] [data-legacy-thread-id]').getAttribute('data-legacy-thread-id');
       // Call your specific function with the token value
-      readMessageAndAnalyzeIfUnread(legacyThreadId,token);
+      if (token && legacyThreadId){
+        readMessageAndAnalyzeIfUnread(legacyThreadId,token);
+      }
     }
   });
   
@@ -30,7 +32,8 @@ function readMessageAndAnalyzeIfUnread(messageId, token) {
         })
         .catch(error => {
               // Handle any errors
-              console.log("error")
+              console.log(token)
+              console.log(error)
         });
         
 }

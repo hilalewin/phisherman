@@ -21,7 +21,8 @@
         "activeTab",
         "scripting",
         "identity",
-        "notifications"
+        "notifications",
+        "tabs"
     ],
     "host_permissions": [
         "https://mail.google.com/*",

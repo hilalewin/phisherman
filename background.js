@@ -38,37 +38,14 @@ function getAuthTokenInteractive() {
  * 
 */
 function handleAuthToken(token) {
-  if (chrome.runtime.lastError) {
-      chrome.action.setIcon({ path: 'red_icon.png' });
-      console.error(chrome.runtime.lastError);
+  if (!token) {
+    chrome.action.setIcon({ path: 'red_icon.png' });
+    console.error(chrome.runtime.lastError);
   } else {
-    chrome.action.setIcon({ path: 'green_icon.png' });
-    create_alert("Hi, welcome! All logged in!");
-    // Inject content script into the current tab
-    // The website must load
-    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (
-      changeInfo &&
-      changeInfo.status === 'loading' && changeInfo.url &&
-      
-      //changeInfo && changeInfo.url &&
-      changeInfo.url.includes('mail.google.com/mail/u/') &&
-      changeInfo.url.includes('inbox') &&
-      !(changeInfo.url.slice(-5) === 'inbox') // !changeInfo.url.endswith('#inbox')
-      
-      ) {
-        create_alert(changeInfo.url)
-        chrome.scripting.executeScript({
-          target: { tabId: tabId },
-          files: ["content.js"]
-        }, () => {
-          // Once the script is injected, send a message to the content script
-          chrome.tabs.sendMessage(tabId, { action: 'invokeFunction', functionName: 'readingEmails', token: token });
-        });
-      }
+    setStoredAccessToken(token, function() {
+      create_alert("Hi, welcome! All logged in!");
+      chrome.action.setIcon({ path: 'green_icon.png' });
     });
-
-  
   }
 }
 
@@ -83,6 +60,21 @@ function getStoredAccessToken(callback) {
   });
 }
 
+// Store the access token
+function setStoredAccessToken(token, callback) {
+  chrome.storage.local.set({ 'access_token': token }, function() {
+    if (chrome.runtime.lastError) {
+      console.error(chrome.runtime.lastError);
+    } else {
+      console.log('Access token stored successfully');
+    }
+    if (callback) {
+      callback();
+    }
+  });
+}
+
+
 // User clicked on the browser action button. Check if the user is authenticated.
 function browserActionClicked(tab) {
   // Check if access token is stored
@@ -91,11 +83,7 @@ function browserActionClicked(tab) {
       // Use the stored token
       create_alert("Hi, welcome back! Already logged in");
       chrome.action.setIcon({ path: 'green_icon.png' });
-      
-      // Inject content script into the current tab
-      // Todo???
-      
-
+  
     } else {
       // Get a new access token
       getAuthTokenInteractive();
@@ -104,3 +92,32 @@ function browserActionClicked(tab) {
 }
 
 chrome.action.onClicked.addListener(browserActionClicked);
+
+function browserInjectiF(tabId, changeInfo, tab){
+   // Check if access token is stored
+   getStoredAccessToken(function(storedToken) {
+    if (storedToken) {
+      // Use the stored token
+      if (changeInfo.status === 'loading' && changeInfo.url &&
+        changeInfo.url.includes('mail.google.com/mail/u/') &&
+        changeInfo.url.includes('inbox') &&
+        !(changeInfo.url.slice(-5) === 'inbox')
+        ) {
+            // Inject content script into the current tab
+            chrome.scripting.executeScript({
+              target: { tabId: tabId },
+              files: ['content.js']
+            }, function() {
+              // Once the script is injected, send a message to the content script
+              chrome.tabs.sendMessage(tabId, { action: 'invokeFunction', functionName: 'readingEmails', token: storedToken });
+            });
+          }
+        }
+      }
+    );
+}
+
+// Add the tab update event listener outside the handleAuthToken function
+chrome.tabs.onUpdated.addListener(browserInjectiF);
+
+  
