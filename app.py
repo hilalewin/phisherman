@@ -1,4 +1,4 @@
-import Email
+from Email import Email
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -12,7 +12,7 @@ cors = CORS(app)
 """
 @app.route('/analyze', methods=['POST'])
 def analyze():
-    emailObj = Email.from_json(request.get_json())
+    emailObj = Email.from_json(request.get_data())
     # Get the fields from the json
     print("Sender Email: " , emailObj.sender_email)
     print("Time: " , emailObj.time)
@@ -26,9 +26,6 @@ def analyze():
 
 def analyze_phishing_content(content):
     return 1
-
-
-
 
 if __name__ == '__main__':
     app.run()
