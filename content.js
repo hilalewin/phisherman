@@ -56,7 +56,7 @@ function createAnalyzeRequestPayload(data) {
     const extractedData = {
       subject: headers.subject,
       time: headers.date,
-      senderEmail: headers.from,
+      sender_email: headers.from,
       content: data.snippet,
       encoded_content: body,
       links: links
