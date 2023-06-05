@@ -109,8 +109,6 @@ function checkAccessTokenValidity(accessToken) {
   });
 }
 
-
-
 chrome.action.onClicked.addListener(browserActionClicked);
 
 function browserInjectiF(tabId, changeInfo, tab){
@@ -129,7 +127,7 @@ function browserInjectiF(tabId, changeInfo, tab){
               files: ['content.js']
             }, function() {
               // Once the script is injected, send a message to the content script
-              chrome.tabs.sendMessage(tabId, { action: 'invokeFunction', functionName: 'readingEmails', token: storedToken });
+              chrome.tabs.sendMessage(tabId, { action: 'invokeFunction', functionName: 'readingEmails', token: storedToken, tabUrl: changeInfo.url });
             });
           }
         }

@@ -1,12 +1,22 @@
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'invokeFunction' && message.functionName === 'readingEmails') {
       // Access the token value from the message object
       const token = message.token;
       const legacyThreadId = document.querySelector('[role="main"] [data-legacy-thread-id]').getAttribute('data-legacy-thread-id');
+      const tabUrl = message.tabUrl; // Access the tab object
+      const CONTENT_SCRIPT_RUN_FLAG = 'contentScriptHasRun';
+
+      
       // Call your specific function with the token value
-      if (token && legacyThreadId){
-        readMessageAndAnalyzeIfUnread(legacyThreadId,token);
-        
+      
+      if (token && legacyThreadId && tabUrl){
+        const hasRun = localStorage.getItem(`${CONTENT_SCRIPT_RUN_FLAG}_${tabUrl}`);
+        if (!hasRun) {
+          readMessageAndAnalyzeIfUnread(legacyThreadId,token);
+          // Mark the content script as run for this tab
+          localStorage.setItem(`${CONTENT_SCRIPT_RUN_FLAG}_${tabUrl}`, true);
+        }
       }
       
     }
