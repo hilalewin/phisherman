@@ -79,34 +79,46 @@ function setStoredAccessToken(token, callback) {
 function browserActionClicked(tab) {
   // Check if access token is stored
   getStoredAccessToken(function(storedToken) {
-  if (checkAccessTokenValidity(storedToken)){
-    create_alert("Hi, welcome back! Already logged in");
-    chrome.action.setIcon({ path: 'green_icon.png' });
-  } 
+    if (storedToken) {
+      checkAccessTokenValidity(storedToken)
+      .then(isValid => {
+        if (isValid) {
+            create_alert("Hi, welcome back! Already logged in");
+            chrome.action.setIcon({ path: 'green_icon.png' });
+        }
+        else {
+          getAuthTokenInteractive();
+        }
+      })
+      .catch(error => {
+        console.error('Error checking access token validity:', error);
+        chrome.action.setIcon({ path: 'red_icon.png' });
+
+      });
+  }
   else {
     getAuthTokenInteractive();
   }
-});
+  });
 }
 
 function checkAccessTokenValidity(accessToken) {
-  fetch('https://gmail.googleapis.com/gmail/v1/users/me/profile', {
+  return fetch('https://gmail.googleapis.com/gmail/v1/users/me/profile', {
     headers: {
       Authorization: `Bearer ${accessToken}`
     }
   })
-  .then(response => {
-    if (response.ok) {
-      return true; // or do something else
-    } else if (response.status === 401) {
-      return false; // or do something else
-    } else {
-      return false; // or do something else
-    }
-  })
-  .catch(error => {
-    console.error('Error checking access token validity:', error);
-  });
+    .then(response => {
+      if (response.status === 200) {
+        return true;
+      } else if (response.status === 401) {
+        return false;
+      }
+    })
+    .catch(error => {
+      console.error('Error checking access token validity:', error);
+      throw error; // Rethrow the error for the caller to handle
+    });
 }
 
 chrome.action.onClicked.addListener(browserActionClicked);
