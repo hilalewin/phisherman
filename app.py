@@ -26,10 +26,11 @@ def analyze():
     print("Time: " , emailObj.time)
     print("Subject: " , emailObj.subject)
     print("Content: " , emailObj.content)
+    print("Decoded Content: ", emailObj.decoded_content)
     print("Links: " , emailObj.links)
 
     # Calculate the phishing prob based on the content
-    analysis_result = {'content': emailObj.content}
+    analysis_result = {'Decoded content': emailObj.decoded_content}
     return jsonify(analysis_result)
 
 def analyze_phishing_content(content):

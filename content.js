@@ -12,7 +12,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       
       if (token && legacyThreadId && tabUrl){
         const hasRun = localStorage.getItem(`${CONTENT_SCRIPT_RUN_FLAG}_${tabUrl}`);
-        if (!hasRun) {
+        // !hasRun
+        if (1) {
           readMessageAndAnalyzeIfUnread(legacyThreadId,token);
           // Mark the content script as run for this tab
           localStorage.setItem(`${CONTENT_SCRIPT_RUN_FLAG}_${tabUrl}`, true);
@@ -50,10 +51,29 @@ function readMessageAndAnalyzeIfUnread(messageId, token) {
         
 }
 
-function decodeMessageBody(encodedData) {
-    // TODO: decode data
-    return encodedData;
+function decodeMessageBody(mtext){
+  var message = "";
+  if (mtext.length > 0) {
+    var decodedMessage = atob(mtext);
+    message = new TextDecoder('utf-8').decode(new Uint8Array([...decodedMessage].map(char => char.charCodeAt(0))));
+  }
+  return message;
 }
+
+function getMessageBody(content){
+  var message = null;
+  if ("data" in content.payload.body) {
+    message = content.payload.body.data;
+    message = decodeMessageBody(message);
+  } else if ("data" in content.payload.parts[0].body) {
+    message = content.payload.parts[0].body.data;
+    message = decodeMessageBody(message);
+  } else {
+    console.log("body has no data.");
+  }
+  return message;
+}
+
 
 
 function createAnalyzeRequestPayload(data) {
@@ -65,7 +85,7 @@ function createAnalyzeRequestPayload(data) {
   
     const links = extractLinksFromSnippet(data.snippet);
   
-    const body = decodeMessageBody(data.payload.body.data);
+    const body = getMessageBody(data);
   
     // Create the payload object
     const extractedData = {
@@ -73,7 +93,7 @@ function createAnalyzeRequestPayload(data) {
       time: headers.date,
       sender_email: headers.from,
       content: data.snippet,
-      encoded_content: body,
+      decoded_content: body,
       links: links
     };
   
@@ -93,7 +113,7 @@ function sendAnalyzeRequest(payload) {
         .then(response => response.json())
         .then(data => {
     
-          alert(data['content']);
+          alert(data['Decoded content']);
           /*
           alert(data['subject']);
           alert(data['links']);
