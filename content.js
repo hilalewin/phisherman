@@ -82,18 +82,18 @@ function createAnalyzeRequestPayload(data) {
       acc[header.name.toLowerCase()] = header.value;
       return acc;
     }, {});
-  
-    const links = extractLinksFromSnippet(data.snippet);
-  
-    const body = getMessageBody(data);
-  
+    
+    const email_content = getMessageBody(data);
+    
+    const links = extractLinksFromContent(email_content);
+
     // Create the payload object
     const extractedData = {
       subject: headers.subject,
       time: headers.date,
       sender_email: headers.from,
       content: data.snippet,
-      decoded_content: body,
+      decoded_content: email_content,
       links: links
     };
   
@@ -155,9 +155,9 @@ function analyzeMessage(data) {
 }
 
 
-function extractLinksFromSnippet(snippet) {
+function extractLinksFromContent(content) {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const matches = snippet.match(urlRegex);
+    const matches = content.match(urlRegex);
     return matches || [];
 }
   
