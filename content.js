@@ -113,7 +113,7 @@ function sendAnalyzeRequest(payload) {
         .then(response => response.json())
         .then(data => {
     
-          alert(data['Decoded content']);
+          alert(data['Answer']);
           /*
           alert(data['subject']);
           alert(data['links']);
