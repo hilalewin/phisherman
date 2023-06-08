@@ -158,6 +158,7 @@ function analyzeMessage(data) {
 function extractLinksFromContent(content) {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const matches = content.match(urlRegex);
-    return matches || [];
+    const uniqueMatches = [...new Set(matches)];
+    return uniqueMatches || [];
 }
   
