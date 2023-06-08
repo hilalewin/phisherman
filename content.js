@@ -103,7 +103,8 @@ function createAnalyzeRequestPayload(data) {
 
 function sendAnalyzeRequest(payload) {
 
-    fetch('https://vm.phishermen.xyz/analyze', {
+  fetch('http://localhost:5000/analyze', {
+  //fetch('https://vm.phishermen.xyz/analyze', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

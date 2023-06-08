@@ -69,6 +69,7 @@ def analyze_phishing_content(content):
 
 
 if __name__ == '__main__':
+    """
     logging.basicConfig(level=logging.DEBUG)
     cert = '/etc/letsencrypt/live/vm.phishermen.xyz/cert.pem'
     key = '/etc/letsencrypt/live/vm.phishermen.xyz/privkey.pem'
@@ -76,4 +77,5 @@ if __name__ == '__main__':
     context.load_cert_chain(cert,key)
 
     app.run(host = '0.0.0.0', port=443, debug = True, ssl_context = context)
-
+    """
+    app.run()
