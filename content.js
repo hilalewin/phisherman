@@ -1,5 +1,5 @@
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     if (message.action === 'invokeFunction' && message.functionName === 'readingEmails') {
       // Access the token value from the message object
       const token = message.token;
@@ -14,7 +14,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         const hasRun = localStorage.getItem(`${CONTENT_SCRIPT_RUN_FLAG}_${tabUrl}`);
         // !hasRun
         if (1) {
-          readMessageAndAnalyzeIfUnread(legacyThreadId,token);
+          await readMessageAndAnalyzeIfUnread(legacyThreadId,token);
           // Mark the content script as run for this tab
           localStorage.setItem(`${CONTENT_SCRIPT_RUN_FLAG}_${tabUrl}`, true);
         }
@@ -23,7 +23,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
   });
   
-function readMessageAndAnalyzeIfUnread(messageId, token) {
+  async function readMessageAndAnalyzeIfUnread(messageId, token) {
   
   const url = `https://www.googleapis.com/gmail/v1/users/me/messages/${messageId}`;
   fetch(url, {
@@ -32,7 +32,7 @@ function readMessageAndAnalyzeIfUnread(messageId, token) {
     },
   })
     .then(response => response.json())
-    .then(data => {
+    .then(async data => {
       const labelIds = data.labelIds;
       const isUnread = labelIds.includes("UNREAD");
 
@@ -40,7 +40,7 @@ function readMessageAndAnalyzeIfUnread(messageId, token) {
       // isUnread
       if (1){
         
-        analyzeMessage(data);
+        await analyzeMessage(data, token);
         }
       }
     )
@@ -81,30 +81,73 @@ function getMessageBody(content) {
   return message;
 }
 
+function getSenderEmail(fromHeader) {
+  try {
+    const match = fromHeader.match(/<(.*?)>/);
+    const email = match ? match[1] : null;
+    return email;
+
+  } catch (error) {
+    return null;
+  }
+}
+
+async function getCounterFromSender(senderEmail, token) {
+  if (senderEmail == null) {
+    return Promise.reject(new Error('Sender email is null'));
+  }
+
+  const url = `https://www.googleapis.com/gmail/v1/users/me/messages?q=from:${senderEmail}`;
+
+  try {
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    const resultSize = data.resultSizeEstimate;
+    return resultSize;
+  } catch (error) {
+    // Handle any errors
+    console.log(error);
+    return -1;
+  }
+}
 
 
-function createAnalyzeRequestPayload(data) {
+async function createAnalyzeRequestPayload(data, token) {
     // Extract the required data from the email
     const headers = data.payload.headers.reduce((acc, header) => {
       acc[header.name.toLowerCase()] = header.value;
       return acc;
     }, {});
+
     const email_content = getMessageBody(data);
 
     const links = extractLinksFromContent(email_content);
 
-    // Create the payload object
-    const extractedData = {
-      subject: headers.subject,
-      time: headers.date,
-      sender_email: headers.from,
-      content: data.snippet,
-      decoded_content: email_content,
-      links: links
-    };
-  
-    return JSON.stringify(extractedData);
-  }
+    const emailSender = getSenderEmail(headers.from);
+
+    try {
+      const counterFromSender = await  getCounterFromSender(emailSender, token);
+      // Create the payload object
+      const extractedData = {
+        subject: headers.subject,
+        time: headers.date,
+        sender_email: headers.from,
+        content: data.snippet,
+        decoded_content: email_content,
+        links: links,
+        counter_from_sender: counterFromSender
+      };
+      return JSON.stringify(extractedData);
+    }
+    catch (error) {
+    console.error(error);
+    return null;
+    }
+}
 
 
 function sendAnalyzeRequest(payload) {
@@ -140,9 +183,9 @@ function sendAnalyzeRequest(payload) {
         });
 }
 
-function analyzeMessage(data) {
+async function analyzeMessage(data, token) {
 
-  const payload = createAnalyzeRequestPayload(data);
+  const payload = await createAnalyzeRequestPayload(data, token);
     /*
     const fromHeader = data.payload.headers.find(header => header.name.toLowerCase() === 'from');
     const senderValue = fromHeader ? fromHeader.value : '';
