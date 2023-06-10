@@ -33,7 +33,6 @@ function readMessageAndAnalyzeIfUnread(messageId, token) {
   })
     .then(response => response.json())
     .then(data => {
-
       const labelIds = data.labelIds;
       const isUnread = labelIds.includes("UNREAD");
 
@@ -43,33 +42,41 @@ function readMessageAndAnalyzeIfUnread(messageId, token) {
         
         analyzeMessage(data);
         }
-        })
-        .catch(error => {
-              // Handle any errors
-              console.log(error)
-        });
+      }
+    )
+
+    .catch(error => {
+          // Handle any errors
+          console.log(error)
+    });
         
 }
 
 function decodeMessageBody(mtext){
   var message = "";
   if (mtext.length > 0) {
+    // https://stackoverflow.com/questions/24464866/having-trouble-reading-the-text-html-message-part
+    mtext = mtext.replace(/_/g, '/').replace(/-/g,'+');
     var decodedMessage = atob(mtext);
     message = new TextDecoder('utf-8').decode(new Uint8Array([...decodedMessage].map(char => char.charCodeAt(0))));
   }
   return message;
 }
 
-function getMessageBody(content){
+function getMessageBody(content) {
   var message = null;
-  if ("data" in content.payload.body) {
-    message = content.payload.body.data;
-    message = decodeMessageBody(message);
-  } else if ("data" in content.payload.parts[0].body) {
-    message = content.payload.parts[0].body.data;
-    message = decodeMessageBody(message);
-  } else {
-    console.log("body has no data.");
+  try {
+    if ("data" in content.payload.body) {
+      message = content.payload.body.data;
+      message = decodeMessageBody(message);
+    } else if ("data" in content.payload.parts[0].body) {
+      message = content.payload.parts[0].body.data;
+      message = decodeMessageBody(message);
+    } else {
+      console.log("body has no data.");
+    }
+  } catch (error) {
+    alert(error);
   }
   return message;
 }
@@ -82,9 +89,8 @@ function createAnalyzeRequestPayload(data) {
       acc[header.name.toLowerCase()] = header.value;
       return acc;
     }, {});
-    
     const email_content = getMessageBody(data);
-    
+
     const links = extractLinksFromContent(email_content);
 
     // Create the payload object
@@ -136,7 +142,7 @@ function sendAnalyzeRequest(payload) {
 
 function analyzeMessage(data) {
 
-    const payload = createAnalyzeRequestPayload(data);
+  const payload = createAnalyzeRequestPayload(data);
     /*
     const fromHeader = data.payload.headers.find(header => header.name.toLowerCase() === 'from');
     const senderValue = fromHeader ? fromHeader.value : '';
@@ -152,7 +158,7 @@ function analyzeMessage(data) {
         senderName = senderValue.trim();
     }
     */
-    sendAnalyzeRequest(payload);
+  sendAnalyzeRequest(payload);
 }
 
 
