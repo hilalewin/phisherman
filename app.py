@@ -10,11 +10,13 @@ import pickle
 # Specify the path to the pickle file containing the trained model
 model_path = 'naive_bayes_model.pkl'
 
+"""
 # Load the model from the pickle file
 with open(model_path, 'rb') as file:
     loaded_model = pickle.load(file)
     vectorizer = loaded_model[1]
     model = loaded_model[0]
+"""
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -39,6 +41,10 @@ def analyze():
     print("Links: " , emailObj.links)
     """
     
+    analysis_result = {'Answer': emailObj.decoded_content}
+    return jsonify(analysis_result)
+
+
     answer = analyze_phishing_content(emailObj.decoded_content)
     # Calculate the phishing prob based on the content
     msg = ""
