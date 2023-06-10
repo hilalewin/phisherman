@@ -42,6 +42,7 @@ def analyze():
     """
     
     analysis_result = {'Answer': emailObj.decoded_content}
+    print(emailObj.counter_from_sender)
     return jsonify(analysis_result)
 
 
