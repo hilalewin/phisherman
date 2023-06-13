@@ -45,14 +45,8 @@ def analyze():
     #print(emailObj.counter_from_sender)
     #return jsonify(analysis_result)
 
-
-    answer = analyze_phishing_content(emailObj.decoded_content)
     # Calculate the phishing prob based on the content
-    msg = ""
-    if answer == 1:
-        msg = "Beware, this email might be phishing"
-    else:
-        msg = "This email is all clear, still be safe out there"
+    msg = create_analyze_phishing(emailObj.decoded_content, emailObj.counter_from_sender)        
     
     analysis_result = {'Answer': msg}
     # print("\n\n" +emailObj.decoded_content)
@@ -73,6 +67,22 @@ def analyze_phishing_content(content):
     ##print("Probability Scores:", probability_scores)
     return predicted_label
 
+# Analyze the probability to be phishing
+def create_analyze_phishing(content,counter_from_sender):
+
+    predicted_label_content = analyze_phishing_content(content)
+
+    msg = ""
+    if predicted_label_content == 1:
+        msg = "Warning: The content of this email raises suspicion of phishing. Be cautious about the information provided and avoid interacting with any links or attachments. It is advisable to delete this email to ensure your online safety.\n"
+    
+    if counter_from_sender == 1:
+        msg += "Warning: This is the first time you have received an email from this sender. Exercise caution and verify the sender's identity before interacting with any links or providing personal information."
+
+    if msg == "":
+        msg = "Great news! This email has been thoroughly checked, and we're happy to inform you that it appears to be safe and free from any phishing attempts."
+
+    return msg
 
 
 if __name__ == '__main__':
