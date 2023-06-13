@@ -3,6 +3,10 @@ import logging
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import ssl
+from feature import FeatureExtraction
+import numpy as np
+import warnings
+
 
 # ML
 import pickle
@@ -16,6 +20,15 @@ with open(model_path, 'rb') as file:
     loaded_model = pickle.load(file)
     vectorizer = loaded_model[1]
     model = loaded_model[0]
+file.close()
+
+
+model_path = 'model_links.pkl'
+
+# Load the model from the pickle file
+with open(model_path, 'rb') as file:
+    gbc = pickle.load(file)
+file.close()
 
 
 app = Flask(__name__)
@@ -46,7 +59,7 @@ def analyze():
     #return jsonify(analysis_result)
 
     # Calculate the phishing prob based on the content
-    msg = create_analyze_phishing(emailObj.decoded_content, emailObj.counter_from_sender)        
+    msg = create_analyze_phishing(emailObj.decoded_content, emailObj.counter_from_sender, emailObj.links)        
     
     analysis_result = {'Answer': msg}
     # print("\n\n" +emailObj.decoded_content)
@@ -67,17 +80,39 @@ def analyze_phishing_content(content):
     ##print("Probability Scores:", probability_scores)
     return predicted_label
 
+def analyze_phishing_links(links):
+
+    bad_links = []
+    for link in links:
+        obj = FeatureExtraction(link)
+        x = np.array(obj.getFeaturesList()).reshape(1,30) 
+        y_pred =gbc.predict(x)[0]
+        # -1 is phishing, 1 is non phishing
+        if y_pred == -1:
+            bad_links.append(link)
+    return bad_links
+       
+
+
 # Analyze the probability to be phishing
-def create_analyze_phishing(content,counter_from_sender):
+def create_analyze_phishing(content,counter_from_sender, links):
+
+
+    bad_links = analyze_phishing_links(links)
 
     predicted_label_content = analyze_phishing_content(content)
 
     msg = ""
     if predicted_label_content == 1:
-        msg = "Warning: The content of this email raises suspicion of phishing. Be cautious about the information provided and avoid interacting with any links or attachments. It is advisable to delete this email to ensure your online safety.\n"
+        msg = "Warning: The content of this email raises suspicion of phishing. \n"
     
     if counter_from_sender == 1:
-        msg += "Warning: This is the first time you have received an email from this sender. Exercise caution and verify the sender's identity before interacting with any links or providing personal information."
+        msg += "Warning: This is the first time you have received an email from this sender.\n"
+
+    if len(bad_links) > 0:
+        msg +=  "Warning: This email contains links that are identified as phishing.\n For example: " 
+        for link in bad_links:
+            msg += str(link) + " "
 
     if msg == "":
         msg = "Great news! This email has been thoroughly checked, and we're happy to inform you that it appears to be safe and free from any phishing attempts."
