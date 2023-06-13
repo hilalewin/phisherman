@@ -1,7 +1,7 @@
 function create_alert(msg) {
   chrome.notifications.create({
     type: 'basic',
-    iconUrl: 'icon1.png',
+    iconUrl: 'icons/icon1.png',
     title: 'Phishrman',
     message: msg
     }
@@ -39,12 +39,12 @@ function getAuthTokenInteractive() {
 */
 function handleAuthToken(token) {
   if (!token) {
-    chrome.action.setIcon({ path: 'red_icon.png' });
+    chrome.action.setIcon({ path: 'icons/red_icon.png' });
     console.error(chrome.runtime.lastError);
   } else {
     setStoredAccessToken(token, function() {
       create_alert("Hi, welcome! All logged in!");
-      chrome.action.setIcon({ path: 'green_icon.png' });
+      chrome.action.setIcon({ path: 'icons/green_icon.png' });
     });
   }
 }
@@ -84,7 +84,7 @@ function browserActionClicked(tab) {
       .then(isValid => {
         if (isValid) {
             create_alert("Hi, welcome back! Already logged in");
-            chrome.action.setIcon({ path: 'green_icon.png' });
+            chrome.action.setIcon({ path: 'icons/green_icon.png' });
         }
         else {
           getAuthTokenInteractive();
@@ -92,7 +92,7 @@ function browserActionClicked(tab) {
       })
       .catch(error => {
         console.error('Error checking access token validity:', error);
-        chrome.action.setIcon({ path: 'red_icon.png' });
+        chrome.action.setIcon({ path: 'icons/red_icon.png' });
 
       });
   }
