@@ -17,19 +17,26 @@
       }
 
       .popup-content {
-        width: 350; /* Increase the width of the popup */
-        height: 150px; /* Increase the height of the popup */
+        
         border-radius: 10px;
+        justify-content: start;
+        overflow: hidden;
+      }
+
+      .popup-headline {
         display: flex;
-        flex-direction: column;
         justify-content: center;
         align-items: center;
-
       }
+
+      #message-image {
+        margin-right: 10px; /* Add margin-right to create space between the image and the headline */
+      }
+
       
       .popup-message {
         font-weight: bold;
-        font-size: 18px;
+        font-size: 22px;
         margin-bottom: 20px;
         padding: 10px;
 
@@ -41,10 +48,8 @@
         border: none;
         font-size: 14px;
         cursor: pointer;
-      }
-
-      #message-image {
-        margin-top: 40px; /* Add margin to the top of the image */
+        margin-top: 5px ;
+        margin-left: 10px; 
       }
 
       #message-text1,
@@ -53,16 +58,37 @@
         margin-bottom: 5px; /* Add margin-bottom to create space between paragraphs */
       }
 
+
+      .custom-bullet {
+        list-style-type: none;
+        padding-left: 30px; /* Adjust the padding as needed */
+        position: relative;
+      }
+
+      .bullet-icon {
+        position: absolute;
+        left: 0;
+        top: 0;
+        margin: 0;
+        width: 22px; /* Adjust the width as needed */
+        height: 22px; /* Adjust the height as needed */
+        margin-top: 5px; /* Adjust the vertical position of the icon */
+      }
+            
+
     </style>
 </head>
   <body>
+    <div class="popup-headline">
+    <img id="message-image" src="" width="40" height="40" alt="Message Image" >
+    <h1 id="message-heading"></h1>
+    </div>
     <div class="popup-content">
       <!-- Dynamic text content based on message -->
-      <img id="message-image" src="" width="40" height="40" alt="Message Image" >
-      <h1 id="message-heading"></h1>
-      <p id="message-text1"></p>
-      <p id="message-text2"></p>
-      <p id="message-text3"></p>
+      <p id="message-text1" class="custom-bullet">
+      </p>
+      <p id="message-text2" class="custom-bullet"></p>
+      <p id="message-text3" class="custom-bullet"></p>
       <button class="popup-exit-button" id="exitButton">Exit</button>
     </div>
     <script src="popup.js">
