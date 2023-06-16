@@ -163,7 +163,10 @@ function sendAnalyzeRequest(payload) {
         .then(response => response.json())
         .then(data => {
     
-          alert(data['Answer']);
+          //alert(data['Answer']);
+          chrome.runtime.sendMessage({ action: "createPopup", message: data['Answer'] }, function(response) {
+            console.log(response.message);
+          });
           /*
           alert(data['subject']);
           alert(data['links']);

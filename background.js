@@ -150,4 +150,16 @@ function browserInjectiF(tabId, changeInfo, tab){
 // Add the tab update event listener outside the handleAuthToken function
 chrome.tabs.onUpdated.addListener(browserInjectiF);
 
-  
+// Listen for a message from the content script
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "createPopup") {
+    var message = request.message; // Accessing the message parameter
+    // Perform actions with the message parameter
+    var message = request.message;
+    var popupUrl = chrome.runtime.getURL("popup.html") + `?message=${encodeURIComponent(message)}`;
+    chrome.windows.create({ url: popupUrl, type: "popup", width: 400, height: 300 });
+    
+    //chrome.tabs.create({ url: `popup.html?message=${encodeURIComponent(message)}` });
+    sendResponse({ message: "Popup created!" });
+  }
+});
