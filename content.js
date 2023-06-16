@@ -139,48 +139,43 @@ async function createAnalyzeRequestPayload(data, token) {
 }
 
 
-function sendAnalyzeRequest(payload) {
+async function sendAnalyzeRequest(payload) {
 
-  fetch('http://localhost:5000/analyze', {
-  //fetch('https://vm.phishermen.xyz/analyze', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: payload,
-      })
-        .then(response => response.json())
-        .then(data => {
-    
+  // 'https://vm.phishermen.xyz/analyze',
+  try {
+    const response = await fetch('http://localhost:5000/analyze', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: payload,
+    });
+  
+   const data = await response.json();
           //alert(data['Answer']);
-          chrome.runtime.sendMessage({ action: "createPopup", message: data['Answer'] }, function(response) {
-            console.log(response.message);
-          });
-          /*
-          alert(data['subject']);
-          alert(data['links']);
-          alert(data['content']);
-          
-          subject: headers.subject,
-          time: headers.date,
-                senderEmail: headers.from, 
-                content: data.snippet,
-                links: links
-                alert(labelIds)
-                */
-        })
-        .catch(error => {
-          // Handle any errors
-          console.log("error")
-        });
+    chrome.runtime.sendMessage({ action: "createPopup", message: data['Answer'] }, function(response) {
+      console.log(response.message);
+    });
+  }
+  catch(error) {
+    // Handle any errors
+    console.log("error")
+  };
 }
 
 async function analyzeMessage(data, token, messageId) {
 
   //const hasRun = localStorage.getItem(`${CONTENT_SCRIPT_RUN_FLAG}_${messageId}`);
 //  if (!hasRun) {
-
+  try {
     const payload = await createAnalyzeRequestPayload(data, token);
+    if (payload) {
+      await sendAnalyzeRequest(payload);
+    }
+  }
+  catch (error){
+    console.error(error);
+  }
     /*
     const fromHeader = data.payload.headers.find(header => header.name.toLowerCase() === 'from');
     const senderValue = fromHeader ? fromHeader.value : '';
@@ -196,7 +191,6 @@ async function analyzeMessage(data, token, messageId) {
         senderName = senderValue.trim();
     }
     */
-    sendAnalyzeRequest(payload);
   //}
   //else {
     // Mark the content script as run for this tab
