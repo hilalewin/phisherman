@@ -5,19 +5,10 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       const token = message.token;
       const legacyThreadId = document.querySelector('[role="main"] [data-legacy-thread-id]').getAttribute('data-legacy-thread-id');
       const tabUrl = message.tabUrl; // Access the tab object
-      const CONTENT_SCRIPT_RUN_FLAG = 'contentScriptHasRun';
 
-      
-      // Call your specific function with the token value
-      
+      // Call your specific function with the token value      
       if (token && legacyThreadId && tabUrl){
-        const hasRun = localStorage.getItem(`${CONTENT_SCRIPT_RUN_FLAG}_${tabUrl}`);
-        // !hasRun
-        if (1) {
           await readMessageAndAnalyzeIfUnread(legacyThreadId,token);
-          // Mark the content script as run for this tab
-          localStorage.setItem(`${CONTENT_SCRIPT_RUN_FLAG}_${tabUrl}`, true);
-        }
       }
       
     }
@@ -38,12 +29,13 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
       // Only if the message is unread
       // isUnread
-      if (1){
-        
-        await analyzeMessage(data, token);
-        }
+      if (isUnread){
+        await analyzeMessage(data, token, messageId);
       }
-    )
+      else{
+        alert(isUnread)
+      } 
+    })
 
     .catch(error => {
           // Handle any errors
@@ -186,9 +178,12 @@ function sendAnalyzeRequest(payload) {
         });
 }
 
-async function analyzeMessage(data, token) {
+async function analyzeMessage(data, token, messageId) {
 
-  const payload = await createAnalyzeRequestPayload(data, token);
+  //const hasRun = localStorage.getItem(`${CONTENT_SCRIPT_RUN_FLAG}_${messageId}`);
+//  if (!hasRun) {
+
+    const payload = await createAnalyzeRequestPayload(data, token);
     /*
     const fromHeader = data.payload.headers.find(header => header.name.toLowerCase() === 'from');
     const senderValue = fromHeader ? fromHeader.value : '';
@@ -204,7 +199,12 @@ async function analyzeMessage(data, token) {
         senderName = senderValue.trim();
     }
     */
-  sendAnalyzeRequest(payload);
+    sendAnalyzeRequest(payload);
+  //}
+  //else {
+    // Mark the content script as run for this tab
+    //localStorage.setItem(`${CONTENT_SCRIPT_RUN_FLAG}_${messageId}`, true);
+ // }
 }
 
 
