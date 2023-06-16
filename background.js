@@ -145,6 +145,10 @@ function browserInjectIf(tabId, changeInfo, tab){
             });
           
         }
+
+        chrome.runtime.onMessage.removeListener(browserActionClicked);
+
+
       }
   });
 }

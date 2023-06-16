@@ -17,31 +17,28 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   async function readMessageAndAnalyzeIfUnread(messageId, token) {
   
   const url = `https://www.googleapis.com/gmail/v1/users/me/messages/${messageId}`;
-  fetch(url, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then(response => response.json())
-    .then(async data => {
-      const labelIds = data.labelIds;
-      const isUnread = labelIds.includes("UNREAD");
+  try {
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    
+    const data = await response.json();
+    const labelIds = data.labelIds;
+    const isUnread = labelIds.includes("UNREAD");
 
-      // Only if the message is unread
-      // isUnread
-      if (isUnread){
-        await analyzeMessage(data, token, messageId);
-      }
-      else{
-        alert(isUnread)
-      } 
-    })
-
-    .catch(error => {
+    // Only if the message is unread
+    // isUnread
+    if (isUnread){
+      await analyzeMessage(data, token, messageId);
+    }
+  }
+  catch(error) {
           // Handle any errors
           console.log(error)
-    });
-        
+    };
+   
 }
 
 function decodeMessageBody(mtext){
