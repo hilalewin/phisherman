@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>New email received!</title>
+    <style>
+      /* CSS styles for the popup */
+
+      .warning {
+        /* Background style for warning messages */
+        background-color: #FFCCCC;
+      }
+      
+      .all_good {
+        /* Background style for info messages */
+        background-color: #b6d7fa;
+      }
+
+      .popup-content {
+        width: 350; /* Increase the width of the popup */
+        height: 150px; /* Increase the height of the popup */
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+      }
+      
+      .popup-message {
+        font-weight: bold;
+        font-size: 18px;
+        margin-bottom: 20px;
+        padding: 10px;
+
+      }
+
+      .popup-exit-button {
+        background-color: #f5da09;
+        color: #000000;
+        border: none;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      #message-image {
+        margin-top: 40px; /* Add margin to the top of the image */
+      }
+
+      #message-text1,
+      #message-text2,
+      #message-text3 {
+        margin-bottom: 5px; /* Add margin-bottom to create space between paragraphs */
+      }
+
+    </style>
+</head>
+  <body>
+    <div class="popup-content">
+      <!-- Dynamic text content based on message -->
+      <img id="message-image" src="" width="40" height="40" alt="Message Image" >
+      <h1 id="message-heading"></h1>
+      <p id="message-text1"></p>
+      <p id="message-text2"></p>
+      <p id="message-text3"></p>
+      <button class="popup-exit-button" id="exitButton">Exit</button>
+    </div>
+    <script src="popup.js">
+      
+
+    </script>
+  </body>
+</html>
