@@ -102,22 +102,22 @@ def create_analyze_phishing(content,counter_from_sender, links):
 
     predicted_label_content = analyze_phishing_content(content)
 
-    msg = ""
-    if predicted_label_content == 1:
-        msg = "Warning: The content of this email raises suspicion of phishing. \n"
-    
+    # pc = phishing content
+    # pl = phishing links
+    # fts = first time sending
+
+    res = [] 
+
+    # We only care if it is the first time receving from sender / gotten phishing emails
     if counter_from_sender == 1:
-        msg += "Warning: This is the first time you have received an email from this sender.\n"
-
+        res.append("fts")
     if len(bad_links) > 0:
-        msg +=  "Warning: This email contains links that are identified as phishing.\n For example: " 
-        for link in bad_links:
-            msg += str(link) + " "
+        res.append("pl")
+    if predicted_label_content == 1:
+        res.append("pc")
 
-    if msg == "":
-        msg = "Great news! This email has been thoroughly checked, and we're happy to inform you that it appears to be safe and free from any phishing attempts."
-
-    return msg
+    # TODO: maybe pass a dict so we can pass the bad links as well?
+    return res 
 
 
 if __name__ == '__main__':
