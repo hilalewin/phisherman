@@ -44,37 +44,37 @@ class FeatureExtraction:
 
         self.features.append(self.UsingIp())
         self.features.append(self.longUrl())
-        self.features.append(self.shortUrl())
-        self.features.append(self.symbol())
-        self.features.append(self.redirecting())
+        #self.features.append(self.shortUrl())
+        #self.features.append(self.symbol())
+        #self.features.append(self.redirecting())
         self.features.append(self.prefixSuffix())
         self.features.append(self.SubDomains())
         self.features.append(self.Hppts())
         self.features.append(self.DomainRegLen())
-        self.features.append(self.Favicon())
+        #self.features.append(self.Favicon())
         
 
-        self.features.append(self.NonStdPort())
-        self.features.append(self.HTTPSDomainURL())
+        #self.features.append(self.NonStdPort())
+        #self.features.append(self.HTTPSDomainURL())
         self.features.append(self.RequestURL())
         self.features.append(self.AnchorURL())
         self.features.append(self.LinksInScriptTags())
         self.features.append(self.ServerFormHandler())
-        self.features.append(self.InfoEmail())
-        self.features.append(self.AbnormalURL())
-        self.features.append(self.WebsiteForwarding())
-        self.features.append(self.StatusBarCust())
+        #self.features.append(self.InfoEmail())
+        #self.features.append(self.AbnormalURL())
+        #self.features.append(self.WebsiteForwarding())
+        #self.features.append(self.StatusBarCust())
 
-        self.features.append(self.DisableRightClick())
-        self.features.append(self.UsingPopupWindow())
-        self.features.append(self.IframeRedirection())
-        self.features.append(self.AgeofDomain())
+        #self.features.append(self.DisableRightClick())
+        #self.features.append(self.UsingPopupWindow())
+        #self.features.append(self.IframeRedirection())
+        #self.features.append(self.AgeofDomain())
         self.features.append(self.DNSRecording())
         self.features.append(self.WebsiteTraffic())
-        self.features.append(self.PageRank())
+        #self.features.append(self.PageRank())
         self.features.append(self.GoogleIndex())
         self.features.append(self.LinksPointingToPage())
-        self.features.append(self.StatsReport())
+        #self.features.append(self.StatsReport())
 
 
      # 1.UsingIp
@@ -94,6 +94,7 @@ class FeatureExtraction:
         return -1
 
     # 3.shortUrl
+    """
     def shortUrl(self):
         match = re.search('bit\.ly|goo\.gl|shorte\.st|go2l\.ink|x\.co|ow\.ly|t\.co|tinyurl|tr\.im|is\.gd|cli\.gs|'
                     'yfrog\.com|migre\.me|ff\.im|tiny\.cc|url4\.eu|twit\.ac|su\.pr|twurl\.nl|snipurl\.com|'
@@ -105,19 +106,24 @@ class FeatureExtraction:
         if match:
             return -1
         return 1
+    """
 
     # 4.Symbol@
+    """
     def symbol(self):
         if re.findall("@",self.url):
             return -1
         return 1
-    
+    """
+
     # 5.Redirecting//
+    """
     def redirecting(self):
         if self.url.rfind('//')>6:
             return -1
         return 1
-    
+    """
+
     # 6.prefixSuffix
     def prefixSuffix(self):
         try:
@@ -171,6 +177,7 @@ class FeatureExtraction:
             return -1
 
     # 10. Favicon
+    """
     def Favicon(self):
         try:
             for head in self.soup.find_all('head'):
@@ -181,8 +188,10 @@ class FeatureExtraction:
             return -1
         except:
             return -1
+    """
 
     # 11. NonStdPort
+    """
     def NonStdPort(self):
         try:
             port = self.domain.split(":")
@@ -191,8 +200,10 @@ class FeatureExtraction:
             return 1
         except:
             return -1
+    """
 
     # 12. HTTPSDomainURL
+    """
     def HTTPSDomainURL(self):
         try:
             if 'https' in self.domain:
@@ -200,7 +211,8 @@ class FeatureExtraction:
             return 1
         except:
             return -1
-    
+    """
+
     # 13. RequestURL
     def RequestURL(self):
         try:
@@ -311,6 +323,7 @@ class FeatureExtraction:
             return -1
 
     # 17. InfoEmail
+    """
     def InfoEmail(self):
         try:
             if re.findall(r"[mail\(\)|mailto:?]", self.soap):
@@ -319,8 +332,10 @@ class FeatureExtraction:
                 return 1
         except:
             return -1
+    """
 
     # 18. AbnormalURL
+    """
     def AbnormalURL(self):
         try:
             if self.response.text == self.whois_response:
@@ -329,8 +344,10 @@ class FeatureExtraction:
                 return -1
         except:
             return -1
+    """
 
     # 19. WebsiteForwarding
+    """
     def WebsiteForwarding(self):
         try:
             if len(self.response.history) <= 1:
@@ -341,8 +358,10 @@ class FeatureExtraction:
                 return -1
         except:
              return -1
+    """
 
     # 20. StatusBarCust
+    """
     def StatusBarCust(self):
         try:
             if re.findall("<script>.+onmouseover.+</script>", self.response.text):
@@ -351,8 +370,10 @@ class FeatureExtraction:
                 return -1
         except:
              return -1
+    """
 
     # 21. DisableRightClick
+    """
     def DisableRightClick(self):
         try:
             if re.findall(r"event.button ?== ?2", self.response.text):
@@ -361,8 +382,10 @@ class FeatureExtraction:
                 return -1
         except:
              return -1
+    """
 
     # 22. UsingPopupWindow
+    """
     def UsingPopupWindow(self):
         try:
             if re.findall(r"alert\(", self.response.text):
@@ -371,8 +394,10 @@ class FeatureExtraction:
                 return -1
         except:
              return -1
-
+    """
+    
     # 23. IframeRedirection
+    """
     def IframeRedirection(self):
         try:
             if re.findall(r"[<iframe>|<frameBorder>]", self.response.text):
@@ -381,8 +406,10 @@ class FeatureExtraction:
                 return -1
         except:
              return -1
+    """
 
     # 24. AgeofDomain
+    """
     def AgeofDomain(self):
         try:
             creation_date = self.whois_response.creation_date
@@ -399,7 +426,8 @@ class FeatureExtraction:
             return -1
         except:
             return -1
-
+    """
+    
     # 25. DNSRecording    
     def DNSRecording(self):
         try:
@@ -429,6 +457,7 @@ class FeatureExtraction:
             return -1
 
     # 27. PageRank
+    """
     def PageRank(self):
         try:
             prank_checker_response = requests.post("https://www.checkpagerank.net/index.php", {"name": self.domain})
@@ -439,7 +468,7 @@ class FeatureExtraction:
             return -1
         except:
             return -1
-            
+    """     
 
     # 28. GoogleIndex
     def GoogleIndex(self):
@@ -466,6 +495,7 @@ class FeatureExtraction:
             return -1
 
     # 30. StatsReport
+    """
     def StatsReport(self):
         try:
             url_match = re.search(
@@ -484,6 +514,7 @@ class FeatureExtraction:
             return 1
         except:
             return 1
-    
+    """ 
+
     def getFeaturesList(self):
         return self.features
