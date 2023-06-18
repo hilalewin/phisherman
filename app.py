@@ -6,7 +6,7 @@ import ssl
 from feature import FeatureExtraction
 import numpy as np
 import warnings
-
+from datetime import datetime
 
 # ML
 import pickle
@@ -64,7 +64,10 @@ def analyze():
     analysis_result = {'Answer': msg}
     # print("\n\n" +emailObj.decoded_content)
     #{'Decoded content': emailObj.decoded_content}
-
+    print(datetime.now())
+    print(Email.__str__(emailObj))
+    print()
+    print()
     return jsonify(analysis_result)
 
 def analyze_phishing_content(content):
