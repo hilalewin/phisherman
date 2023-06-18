@@ -25,8 +25,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     });
     
     const data = await response.json();
-    const labelIds = data.labelIds;
-    const isUnread = labelIds.includes("UNREAD");
+    const labelIds = await data.labelIds;
+    const isUnread = await labelIds.includes("UNREAD");
 
     // Only if the message is unread
     // isUnread
@@ -167,15 +167,10 @@ async function analyzeMessage(data, token, messageId) {
 
   //const hasRun = localStorage.getItem(`${CONTENT_SCRIPT_RUN_FLAG}_${messageId}`);
 //  if (!hasRun) {
-  try {
-    const payload = await createAnalyzeRequestPayload(data, token);
+  const payload = await createAnalyzeRequestPayload(data, token);
     if (payload) {
       await sendAnalyzeRequest(payload);
     }
-  }
-  catch (error){
-    console.error(error);
-  }
     /*
     const fromHeader = data.payload.headers.find(header => header.name.toLowerCase() === 'from');
     const senderValue = fromHeader ? fromHeader.value : '';
