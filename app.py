@@ -6,7 +6,9 @@ import ssl
 from feature import FeatureExtraction
 import numpy as np
 import warnings
-from datetime import datetime
+import time
+import threading
+
 
 # ML
 import pickle
@@ -34,6 +36,11 @@ file.close()
 app = Flask(__name__)
 cors = CORS(app)
 
+# Create a lock object
+unique_requests_lock = threading.Lock()
+
+# Create a set to store the unique request hashes
+unique_requests = set()
 
 """
  Received data and metadata of the email from the clinet,
@@ -41,13 +48,31 @@ cors = CORS(app)
 """
 @app.route('/analyze', methods=['POST'])
 def analyze():
-
-    
     emailObj = Email.from_json(request.get_data())
-    # Calculate the phishing prob based on the content
-    msg = create_analyze_phishing(emailObj.decoded_content, emailObj.counter_from_sender, emailObj.links)        
+
+    request_data = emailObj.messageId
+    request_hash = hash(request_data)
+
+    # Check if the request is already in unique_requests
+    # Do it with a lock
+    with unique_requests_lock:
+        if request_hash in unique_requests:
+            return "Duplicate request ignored."
+        else:
+            unique_requests.add(request_hash)
     
+    # Calculate the phishing prob based on the content
+    msg = create_analyze_phishing(emailObj.decoded_content, emailObj.counter_from_sender, emailObj.links)          
     analysis_result = {'Answer': msg}
+
+    # Waiting some time before removing from the list
+    # This is the time that a new requests will recieved
+    time.sleep(0.5)
+
+    # Remove the request hash from unique_requests
+    with unique_requests_lock:
+        unique_requests.remove(request_hash)
+
     return jsonify(analysis_result)
 
 def analyze_phishing_content(content):
