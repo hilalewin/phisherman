@@ -1,7 +1,8 @@
 import json
 
 class Email:
-    def __init__(self, sender_email, time, subject, content, links, decoded_content, counter_from_sender):
+    def __init__(self, messageId, sender_email, time, subject, content, links, decoded_content, counter_from_sender):
+        self.messageId = messageId
         self.sender_email = sender_email
         self.time = time
         self.subject = subject

@@ -122,6 +122,7 @@ async function createAnalyzeRequestPayload(data, token) {
       const counterFromSender = await  getCounterFromSender(emailSender, token);
       // Create the payload object
       const extractedData = {
+        messageId: data.id,
         subject: headers.subject,
         time: headers.date,
         sender_email: headers.from,
