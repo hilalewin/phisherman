@@ -44,30 +44,10 @@ def analyze():
 
     
     emailObj = Email.from_json(request.get_data())
-    # Get the fields from the json
-    """
-    print("Sender Email: " , emailObj.sender_email)
-    print("Time: " , emailObj.time)
-    print("Subject: " , emailObj.subject)
-    print("Content: " , emailObj.content)
-    print("Decoded Content: ", emailObj.decoded_content)
-    print("Links: " , emailObj.links)
-    """
-    
-    #analysis_result = {'Answer': emailObj.decoded_content}
-    #print(emailObj.counter_from_sender)
-    #return jsonify(analysis_result)
-
     # Calculate the phishing prob based on the content
     msg = create_analyze_phishing(emailObj.decoded_content, emailObj.counter_from_sender, emailObj.links)        
     
     analysis_result = {'Answer': msg}
-    # print("\n\n" +emailObj.decoded_content)
-    #{'Decoded content': emailObj.decoded_content}
-    print(datetime.now())
-    print(Email.__str__(emailObj))
-    print()
-    print()
     return jsonify(analysis_result)
 
 def analyze_phishing_content(content):
