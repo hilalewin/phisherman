@@ -123,6 +123,8 @@ function checkAccessTokenValidity(accessToken) {
 
 chrome.action.onClicked.addListener(browserActionClicked);
 
+const CONTENT_SCRIPT_RUN_FLAG = 'HasRun';
+
 function browserInjectIf(tabId, changeInfo, tab){
    // Check if access token is stored
    getStoredAccessToken(function(storedToken) {
@@ -135,23 +137,26 @@ function browserInjectIf(tabId, changeInfo, tab){
         changeInfo.url.includes('inbox') &&
         !(changeInfo.url.slice(-5) === 'inbox')
         ) {
-            // Inject content script into the current tab
-            chrome.scripting.executeScript({
-              target: { tabId: tabId },
-              files: ['content.js']
-            }, function() {
-              // Once the script is injected, send a message to the content script
-              chrome.tabs.sendMessage(tabId, { action: 'invokeFunction', functionName: 'readingEmails', token: storedToken, tabUrl: changeInfo.url });
-            });
-          
+           // Check if the script was already injected
+          chrome.storage.local.get(`${CONTENT_SCRIPT_RUN_FLAG}_${changeInfo.url}`, function(result) {
+            if (!result[`${CONTENT_SCRIPT_RUN_FLAG}_${changeInfo.url}`]) {
+              // Set the flag to indicate that the script has been injected
+              chrome.storage.local.set({ [`${CONTENT_SCRIPT_RUN_FLAG}_${changeInfo.url}`]: true }, function() {
+                // Inject content script into the current tab
+                chrome.scripting.executeScript({
+                  target: { tabId: tabId },
+                  files: ['content.js']
+                }, function() {
+                  // Once the script is injected, send a message to the content script
+                  chrome.tabs.sendMessage(tabId, { action: 'invokeFunction', functionName: 'readingEmails', token: storedToken, tabUrl: changeInfo.url });
+                });
+              });
+            }          
+          });
         }
-
-        chrome.runtime.onMessage.removeListener(browserActionClicked);
-
-
       }
-  });
-}
+    });
+  }
 
 // Add the tab update event listener outside the handleAuthToken function
 chrome.tabs.onUpdated.addListener(browserInjectIf);
