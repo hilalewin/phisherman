@@ -25,7 +25,7 @@ with open(model_path, 'rb') as file:
 file.close()
 
 
-model_path = 'model_links.pkl'
+model_path = 'gradient_boosting_model.pkl'
 
 # Load the model from the pickle file
 with open(model_path, 'rb') as file:
@@ -93,10 +93,10 @@ def analyze_phishing_links(links):
     bad_links = []
     for link in links:
         obj = FeatureExtraction(link)
-        x = np.array(obj.getFeaturesList()).reshape(1,30) 
+        x = np.array(obj.getFeaturesList()).reshape(1,14) 
         y_pred =gbc.predict(x)[0]
-        # -1 is phishing, 1 is non phishing
-        if y_pred == -1:
+        # 1 is phishing, 0 is non phishing
+        if y_pred == 1:
             bad_links.append(link)
     return bad_links
        
