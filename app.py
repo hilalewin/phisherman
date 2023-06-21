@@ -117,7 +117,7 @@ def create_analyze_phishing(content,counter_from_sender, links):
     res = [] 
 
     # We only care if it is the first time receving from sender / gotten phishing emails
-    if counter_from_sender == 1:
+    if counter_from_sender == True:
         res.append("fts")
     if len(bad_links) > 0:
         res.append("pl")
