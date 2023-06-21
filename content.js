@@ -81,10 +81,19 @@ function getSenderEmail(fromHeader) {
   }
 }
 
-async function getCounterFromSender(senderEmail, token) {
+// 1 for first time, 0 for else
+async function getFirstTimeFromSender(senderEmail, token) {
   if (senderEmail == null) {
     return Promise.reject(new Error('Sender email is null'));
   }
+
+  // Use cache to store it
+  chrome.storage.local.get(`${senderEmail}`, function(result) {
+    if (result[`${senderEmail}`]) {
+      return false;
+    }
+  });
+  
 
   const url = `https://www.googleapis.com/gmail/v1/users/me/messages?q=from:${senderEmail}`;
 
@@ -96,7 +105,9 @@ async function getCounterFromSender(senderEmail, token) {
     });
     const data = await response.json();
     const resultSize = data.resultSizeEstimate;
-    return resultSize;
+    // Setting the cache
+    chrome.storage.local.set({ [`${senderEmail}`]: true });
+    return resultSize === 1;
   } catch (error) {
     // Handle any errors
     console.log(error);
@@ -119,7 +130,7 @@ async function createAnalyzeRequestPayload(data, token) {
     const emailSender = getSenderEmail(headers.from);
 
     try {
-      const counterFromSender = await  getCounterFromSender(emailSender, token);
+      const isFirstTimeFromSender = await  getFirstTimeFromSender(emailSender, token);
       // Create the payload object
       const extractedData = {
         messageId: data.id,
@@ -129,7 +140,7 @@ async function createAnalyzeRequestPayload(data, token) {
         content: data.snippet,
         decoded_content: email_content,
         links: links,
-        counter_from_sender: counterFromSender
+        counter_from_sender: isFirstTimeFromSender
       };
       return JSON.stringify(extractedData);
     }
